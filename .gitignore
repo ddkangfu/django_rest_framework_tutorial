@@ -55,3 +55,6 @@ target/
 
 # Mac file
 .DS_Store
+
+# DB File
+*.sqlite3
