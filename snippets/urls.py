@@ -1,39 +1,13 @@
-from django.conf.urls import patterns, url
-from rest_framework.urlpatterns import format_suffix_patterns
+from django.conf.urls import patterns, url, include
 from snippets import views
+from rest_framework.routers import DefaultRouter
 
-from snippets.views import SnippetViewSet, UserViewSet
-from rest_framework import renderers
 
-snippet_list = SnippetViewSet.as_view({
-                                       'get': 'list',
-                                       'post': 'create'
-                                       })
+router = DefaultRouter()
+router.register(r'snippets', views.SnippetViewSet)
+router.register(r'users', views.UserViewSet)
 
-snippet_detail = SnippetViewSet.as_view({
-                                         'get': 'retrieve',
-                                         'put': 'update',
-                                         'patch': 'partial_update',
-                                         'delete': 'destroy'
-                                         })
-
-snippet_highlight = SnippetViewSet.as_view({
-                                            'get': 'highlight'
-                                            }, renderer_classes=[renderers.StaticHTMLRenderer])
-
-user_list = UserViewSet.as_view({
-                                 'get': 'list'
-                                 })
-
-user_detail = UserViewSet.as_view({
-                                   'get': 'retrieve'
-                                   })
-
-urlpatterns = format_suffix_patterns(patterns('snippets.views',
-    url(r'^snippets/$', views.SnippetList.as_view(), name='snippet-list'),
-    url(r'^snippets/(?P<pk>[0-9]+)/$', views.SnippetDetail.as_view(), name='snippet-detail'),
-    url(r'^users/$', views.UserList.as_view(), name='user-list'),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view(), name='user-detail'),
-    url(r'^$', views.api_root),
-    url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', views.SnippetHighlight.as_view(), name='snippet-highlight'),
-))
+urlpatterns = patterns('',
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+)
